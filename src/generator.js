@@ -1,19 +1,19 @@
-import cloneDeep from 'clone-deep';
-import createThrottle from 'async-throttle';
-import defaultMetadataProvider from 'svgicons2svgfont/src/metadata';
-import fileSorter from 'svgicons2svgfont/src/filesorter';
-import fs from 'fs';
-import globby from 'globby';
-import nunjucks from 'nunjucks';
-import os from 'os';
-import path from 'path';
-import {Readable} from 'stream';
-import svgicons2svgfont from 'svgicons2svgfont';
-import svg2ttf from 'svg2ttf';
-import ttf2eot from 'ttf2eot';
-import ttf2woff from 'ttf2woff';
-import ttf2woff2 from 'ttf2woff2';
-import xml2js from 'xml2js';
+const cloneDeep = require('clone-deep');
+const createThrottle = require('async-throttle');
+const defaultMetadataProvider = require('svgicons2svgfont/src/metadata');
+const fileSorter = require('svgicons2svgfont/src/filesorter');
+const fs = require('fs');
+const globby = require('globby');
+const nunjucks = require('nunjucks');
+const os = require('os');
+const path = require('path');
+const {Readable} = require('stream');
+const svgicons2svgfont = require('svgicons2svgfont');
+const svg2ttf = require('svg2ttf');
+const ttf2eot = require('ttf2eot');
+const ttf2woff = require('ttf2woff');
+const ttf2woff2 = require('ttf2woff2');
+const xml2js = require('xml2js');
 
 function getGlyphsData(files, options) {
   const metadataProvider =
@@ -51,6 +51,7 @@ function getGlyphsData(files, options) {
                     glyphContents,
                     error => {
                       if (error) {
+                        console.log('\x1b[33m%s\x1b[0m', "Incorrect file: " + srcPath);
                         return reject(error);
                       }
 
@@ -87,7 +88,7 @@ function svgIcons2svgFontFn(glyphsData, options) {
   let result = '';
 
   return new Promise((resolve, reject) => {
-    const fontStream = svgicons2svgfont({
+    const fontStream = new svgicons2svgfont({
       ascent: options.ascent,
       centerHorizontally: options.centerHorizontally,
       descent: options.descent,
@@ -129,11 +130,11 @@ export default function(initialOptions) {
     {},
     {
       ascent: undefined,
-      centerHorizontally: false,
+      centerHorizontally: true,
       cssFontPath: '/static/fonts/',
       descent: 0,
       fixedWidth: false,
-      fontHeight: null,
+      fontHeight: 100,
       fontId: null,
       fontName: 'iconfont',
       fontStyle: '',
@@ -150,9 +151,8 @@ export default function(initialOptions) {
       maxConcurrency: os.cpus().length,
       metadata: null,
       metadataProvider: null,
-      normalize: false,
+      normalize: true,
       prependUnicode: false,
-      round: 10e12,
       startUnicode: 0xEA01,
       template: 'scss',
       verbose: false
